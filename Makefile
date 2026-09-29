@@ -1,4 +1,4 @@
-.PHONY: install backend frontend seed seed-week1 test lint format check
+.PHONY: install backend frontend seed test lint format check
 
 install:
 	cd backend && python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
@@ -11,10 +11,7 @@ frontend:
 	cd frontend && npm run dev
 
 seed:
-	cd backend && .venv/bin/python scripts/seed.py --reset --refresh-profile
-
-seed-week1:
-	cd backend && .venv/bin/python scripts/seed.py --reset --until 2026-07-08 --bank carecircle-sharma-week1
+	cd backend && .venv/bin/python scripts/seed.py --reset --checkpoints --refresh-profile
 
 test:
 	cd backend && .venv/bin/pytest -q

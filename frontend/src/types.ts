@@ -21,6 +21,7 @@ export interface Person {
   id: string
   name: string
   role: string
+  last_seen?: string | null
 }
 
 export interface Doctor extends Person {
@@ -71,6 +72,44 @@ export interface Source {
   text: string
   date: string | null
   type: string | null
+  context?: string | null
+}
+
+export interface DateCheck {
+  mention: string
+  supported: boolean
+}
+
+export interface LearnedFact {
+  text: string
+  type: string | null
+  entities: string[]
+}
+
+export interface Checkpoint {
+  id: string
+  label: string
+  until: string | null
+  description: string
+  memory_count: number | null
+}
+
+export interface Digest {
+  headline: string
+  updates: {
+    date: string
+    text: string
+    reported_by?: string | null
+    importance: 'high' | 'medium' | 'low'
+  }[]
+  action_items: string[]
+}
+
+export interface DigestResponse {
+  caregiver: string
+  since: string
+  digest: Digest | null
+  raw_text: string | null
 }
 
 export interface LogResponse {
@@ -78,12 +117,15 @@ export interface LogResponse {
   safety: SafetyAlert | null
   alerts: Alert[]
   alerts_error: string | null
+  learned: LearnedFact[]
 }
 
 export interface AskResponse {
   answer: string
   used_memory: boolean
+  checkpoint: string | null
   sources: Source[]
+  date_checks: DateCheck[]
   safety: SafetyAlert | null
 }
 

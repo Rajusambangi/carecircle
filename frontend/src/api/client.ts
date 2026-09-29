@@ -1,7 +1,9 @@
 import type {
   AskResponse,
   BriefResponse,
+  Checkpoint,
   Circle,
+  DigestResponse,
   LogResponse,
   ProfileResponse,
   TimelineItem,
@@ -38,8 +40,13 @@ export const api = {
   log: (body: { text: string; author_id: string; patient_id: string; occurred_at?: string }) =>
     post<LogResponse>('/log', body),
 
-  ask: (body: { question: string; patient_id: string; use_memory: boolean }) =>
+  ask: (body: { question: string; patient_id: string; use_memory: boolean; checkpoint?: string }) =>
     post<AskResponse>('/ask', body),
+
+  checkpoints: () => request<Checkpoint[]>('/checkpoints'),
+
+  digest: (body: { patient_id: string; caregiver_id: string; since?: string }) =>
+    post<DigestResponse>('/digest', body),
 
   brief: (body: { patient_id: string; doctor_id: string; since?: string; visit_date?: string }) =>
     post<BriefResponse>('/brief', body),

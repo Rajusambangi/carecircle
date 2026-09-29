@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Literal
+from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
@@ -29,6 +30,7 @@ class Person(BaseModel):
     id: str
     name: str
     role: str
+    last_seen: str | None = Field(default=None, description="When they last opened CareCircle")
 
 
 class Doctor(Person):
@@ -63,6 +65,7 @@ class Circle(BaseModel):
 class CareEvent(BaseModel):
     """One thing someone in the circle observed or was told, ready to retain."""
 
+    id: str = Field(default_factory=lambda: uuid4().hex[:12])
     patient_id: str
     author_id: str
     occurred_at: datetime
@@ -90,6 +93,28 @@ class Source(BaseModel):
     text: str
     date: str | None = None
     type: str | None = None
+    context: str | None = Field(default=None, description="Who recorded it and what kind of entry")
+
+
+class DateCheck(BaseModel):
+    """A date mentioned in an answer, and whether any source memory backs it up."""
+
+    mention: str
+    supported: bool
+
+
+class LearnedFact(BaseModel):
+    text: str
+    type: str | None = None
+    entities: list[str] = Field(default_factory=list)
+
+
+class Checkpoint(BaseModel):
+    id: str
+    label: str
+    until: str | None
+    description: str
+    memory_count: int | None = None
 
 
 # ---- API payloads ----
@@ -107,19 +132,49 @@ class LogResponse(BaseModel):
     safety: SafetyAlert | None = None
     alerts: list[Alert] = Field(default_factory=list)
     alerts_error: str | None = None
+    learned: list[LearnedFact] = Field(default_factory=list)
 
 
 class AskRequest(BaseModel):
     question: str = Field(min_length=2, max_length=2000)
     patient_id: str
     use_memory: bool = True
+    checkpoint: str | None = Field(default=None, description="Memory as of a checkpoint")
 
 
 class AskResponse(BaseModel):
     answer: str
     used_memory: bool
+    checkpoint: str | None = None
     sources: list[Source] = Field(default_factory=list)
+    date_checks: list[DateCheck] = Field(default_factory=list)
     safety: SafetyAlert | None = None
+
+
+class DigestRequest(BaseModel):
+    patient_id: str
+    caregiver_id: str
+    since: str | None = None
+
+
+class DigestUpdate(BaseModel):
+    date: str
+    text: str
+    reported_by: str | None = None
+    importance: Literal["high", "medium", "low"] = "medium"
+
+
+class Digest(BaseModel):
+    headline: str
+    updates: list[DigestUpdate] = Field(default_factory=list)
+    action_items: list[str] = Field(default_factory=list)
+
+
+class DigestResponse(BaseModel):
+    caregiver: str
+    since: str
+    digest: Digest | None = None
+    raw_text: str | None = None
 
 
 class BriefRequest(BaseModel):

@@ -12,7 +12,8 @@ SYSTEM = f"""You structure notes written by family caregivers of an elderly pati
 Return a JSON object with keys:
 - "type": one of {list(EVENT_TYPES)}
 - "severity": "low" | "medium" | "high" (high = fall, injury, reaction, very abnormal vitals)
-- "summary": one factual sentence in third person keeping every number, drug name and dose
+- "summary": one factual sentence in English, third person, keeping every number, drug
+  name and dose (translate if the note is in Hindi, Marathi or another language)
 - "occurred_at": ISO-8601 datetime. Resolve relative times ("this morning", "yesterday
   evening") against the logged-at time. Default to the logged-at time.
 - "entities": list of medication names, doctor names, symptoms and tests mentioned

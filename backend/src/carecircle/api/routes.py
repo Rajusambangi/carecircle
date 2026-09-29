@@ -5,7 +5,8 @@ from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
-from ..agents import alerts, ask, brief, extractor
+from .. import checkpoints
+from ..agents import alerts, ask, brief, digest, extractor
 from ..llm import LLM
 from ..memory import MemoryStore
 from ..safety import check_emergency
@@ -14,7 +15,10 @@ from ..schemas import (
     AskResponse,
     BriefRequest,
     BriefResponse,
+    Checkpoint,
     Circle,
+    DigestRequest,
+    DigestResponse,
     LogRequest,
     LogResponse,
     ProfileResponse,
@@ -30,6 +34,14 @@ LOCAL_TZ = ZoneInfo("Asia/Kolkata")
 def _deps(request: Request) -> tuple[Circle, MemoryStore, LLM]:
     s = request.app.state
     return s.circle, s.memory, s.llm
+
+
+def _memory_for(request: Request, checkpoint: str | None) -> MemoryStore:
+    memories: dict[str, MemoryStore] = request.app.state.memories
+    key = checkpoint or checkpoints.LIVE
+    if key not in memories:
+        raise HTTPException(404, f"Unknown checkpoint '{key}'")
+    return memories[key]
 
 
 def _check_patient(circle: Circle, patient_id: str) -> None:
@@ -76,19 +88,28 @@ async def log_entry(body: LogRequest, request: Request) -> LogResponse:
         log.exception("retain failed")
         raise HTTPException(502, f"Could not save to memory: {e}") from e
 
+    learned = []
+    try:
+        learned = await memory.learned_from(event)
+    except Exception as e:
+        log.warning("could not read back learned facts: %s", e)
+
     found, alerts_error = [], None
     try:
         found = await alert_task
     except Exception as e:
         log.warning("alert check failed: %s", e)
         alerts_error = "Pattern check is unavailable right now; the entry was saved."
-    return LogResponse(event=event, safety=safety, alerts=found, alerts_error=alerts_error)
+    return LogResponse(
+        event=event, safety=safety, alerts=found, alerts_error=alerts_error, learned=learned
+    )
 
 
 @router.post("/ask", response_model=AskResponse)
 async def ask_question(body: AskRequest, request: Request) -> AskResponse:
-    circle, memory, llm = _deps(request)
+    circle, _, llm = _deps(request)
     _check_patient(circle, body.patient_id)
+    memory = _memory_for(request, body.checkpoint)
     try:
         resp = await ask.answer(
             body.question,
@@ -102,7 +123,44 @@ async def ask_question(body: AskRequest, request: Request) -> AskResponse:
         log.exception("ask failed")
         raise HTTPException(502, f"Could not answer right now: {e}") from e
     resp.safety = check_emergency(body.question)
+    resp.checkpoint = body.checkpoint if body.use_memory else None
     return resp
+
+
+@router.get("/checkpoints", response_model=list[Checkpoint])
+async def list_checkpoints(request: Request) -> list[Checkpoint]:
+    async def count(cp_id: str) -> int | None:
+        try:
+            return await _memory_for(request, cp_id).memory_count()
+        except Exception:
+            return None  # checkpoint bank not seeded yet
+
+    counts = await asyncio.gather(*(count(c.id) for c in checkpoints.CHECKPOINTS))
+    return [
+        Checkpoint(
+            id=c.id,
+            label=c.label,
+            until=c.until.isoformat() if c.until else None,
+            description=c.description,
+            memory_count=n,
+        )
+        for c, n in zip(checkpoints.CHECKPOINTS, counts, strict=True)
+    ]
+
+
+@router.post("/digest", response_model=DigestResponse)
+async def catch_up(body: DigestRequest, request: Request) -> DigestResponse:
+    circle, memory, _ = _deps(request)
+    _check_patient(circle, body.patient_id)
+    caregiver = circle.person(body.caregiver_id)
+    if caregiver is None:
+        raise HTTPException(404, f"Unknown caregiver '{body.caregiver_id}'")
+    since = body.since or caregiver.last_seen or "the last 7 days"
+    try:
+        return await digest.build_digest(memory, circle, caregiver, since=since)
+    except Exception as e:
+        log.exception("digest failed")
+        raise HTTPException(502, f"Could not build the catch-up: {e}") from e
 
 
 @router.post("/brief", response_model=BriefResponse)

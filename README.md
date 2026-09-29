@@ -21,6 +21,11 @@ Caring for an aging parent is split across siblings in different cities, a home 
 | 🧠 | **Care profile** that updates itself | Medications, allergies, routines and Dad's preferences, learned over time |
 | 🗓 | **Timeline** of everything the circle has recorded | Searchable history in one place |
 | 🚨 | **Deterministic emergency check** | Red-flag words trigger "Call 112", without waiting on an LLM |
+| ⏳ | **Learning curve (memory time machine)**: the same question at No memory → Week 1 → Day 45 → Today | You can watch the agent get smarter as memory grows |
+| 🧠 | **"What I just learned"** after every log entry | Shows the facts and people/medicines Hindsight extracted from that note |
+| ✅ | **Fact-checked answers**: every date is checked against the source memories, and each source shows who recorded it | Catches a wrong date before the family relies on it |
+| 🎙 | **Voice logging** in English, हिंदी and मराठी | Nurses and parents can speak instead of type |
+| 🔔 | **"Since you last checked" digest** for each caregiver | Arjun in Seattle sees only what changed since his last visit, and who reported it |
 
 CareCircle **coordinates and remembers. It never diagnoses** or tells the family to change a medication.
 
@@ -60,7 +65,7 @@ backend/   FastAPI
 ```bash
 make install
 cp backend/.env.example backend/.env     # fill in HINDSIGHT_* and GROQ_API_KEY
-make seed                                # loads 90 days of the Sharma family's history
+make seed                                # loads the history + Week 1 / Day 45 checkpoint banks
 make backend                             # terminal 1 → http://localhost:8000/docs
 make frontend                            # terminal 2 → http://localhost:5173
 ```
@@ -74,7 +79,8 @@ The demo data is **the Sharma family** ([backend/data/sharma_family.json](backen
 1. **Ask**: *"Dad has been dizzy again this morning. What should I tell the cardiologist?"* The no-memory answer is generic. CareCircle links the dizziness to the Aug 10 Metoprolol increase, the low pulse readings, the Aug 22 fall, and the lipid test that is still pending.
 2. **Log** (as Priya): *"Dr. Mehta wants to start Bactrim DS for 5 days."* An ⚠️ alert fires about the March 2024 rash.
 3. **Doctor brief** for Dr. Kulkarni, Sep 30: a one-page brief, ready to print.
-4. **Care profile**: compare the `week1` bank (`make seed-week1`) with the full bank to show the learning curve.
+4. **Learning curve**: click *Watch CareCircle learn*. The same question is answered with no memory, at Week 1, at Day 45 and today, side by side.
+5. **What's new** (as Arjun): the catch-up panel slides in with only what changed since Sep 14.
 
 ## Repository layout
 
@@ -82,7 +88,7 @@ The demo data is **the Sharma family** ([backend/data/sharma_family.json](backen
 .github/            CI workflow, PR and issue templates
 backend/            FastAPI service (src/carecircle), tests, seed script, demo data
 frontend/           React app (src/api, src/components, src/features, src/lib)
-docs/               PLAN.md (product and build plan), HINDSIGHT.md (memory design)
+docs/               PLAN.md (plan), HINDSIGHT.md (memory design), DEMO.md (demo script)
 ```
 
 ## Contributing

@@ -7,7 +7,14 @@ from carecircle.circle import load_circle
 from carecircle.config import get_settings
 from carecircle.llm import LLM
 from carecircle.memory import ReflectResult
-from carecircle.schemas import CareEvent, Circle, ProfileResponse, Source, TimelineItem
+from carecircle.schemas import (
+    CareEvent,
+    Circle,
+    LearnedFact,
+    ProfileResponse,
+    Source,
+    TimelineItem,
+)
 
 
 @dataclass
@@ -51,6 +58,12 @@ class FakeMemory:
 
     async def refresh_profile(self, patient_id: str) -> None:
         pass
+
+    async def learned_from(self, event: CareEvent) -> list[LearnedFact]:
+        return [LearnedFact(text=f"Learned: {event.text}", type="world", entities=event.entities)]
+
+    async def memory_count(self) -> int:
+        return len(self.events)
 
 
 class FakeLLM(LLM):

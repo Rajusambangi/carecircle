@@ -46,10 +46,21 @@ Two details matter here:
 | Timeline | `list_memories(search_query=...)` | Filtered by the patient tag |
 | Care profile | `get_mental_model(detail="content")` + `list_memories(type="observation")` | The profile plus the consolidated patterns |
 
-## 4. Why this gets better over time
+## 4. Features built on memory
+
+| Feature | How it uses Hindsight |
+|---|---|
+| **Learning curve** | `seed.py --checkpoints` builds `carecircle-sharma-week1` and `-day45` banks alongside the live bank. `/api/ask` takes a `checkpoint` and runs `reflect` on that bank, so the same question can be answered by the memory as it was on each date |
+| **What I just learned** | Each log entry is retained with `document_id = log-<id>`. After retain, `recall` is filtered by that document id to show exactly the facts and entities Hindsight extracted from the note |
+| **Fact check** | `reflect(include_facts=True)` returns the memories used. Each date mentioned in the answer is matched against those memories' `occurred_start` and text; any date without support is flagged |
+| **Sources with reporter** | The `context` stored at retain time ("… · by Lakshmi Nair (home nurse)") comes back on each fact, so every citation shows who recorded it |
+| **Catch-up digest** | `reflect` with a `response_schema`, scoped to events since that caregiver last checked |
+| **Date-precision directive** | A directive stops reflect from moving an event to the date of a later message that mentions it |
+
+## 5. Why this gets better over time
 
 1. **Week 1**: a few vitals and a preference. The profile is thin, and alerts have nothing to connect to.
 2. **Week 6**: a dose change, then dizziness reported by the nurse, a son and a daughter. Observations consolidate *"dizziness since the Metoprolol increase"*.
 3. **Week 12**: the profile knows the medicines, the 2024 sulfa reaction, the overdue lipid test, the preference for afternoon appointments and Marathi explanations. New entries now trigger specific, dated alerts.
 
-To show this in the demo, seed two banks: `make seed-week1` and `make seed`.
+To show this in the demo, run `make seed` (it seeds all three checkpoints), then click **Watch CareCircle learn** on the Ask screen.

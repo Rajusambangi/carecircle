@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from . import checkpoints
 from .api.routes import router
 from .circle import load_circle
 from .config import Settings, get_settings
@@ -39,7 +40,14 @@ def create_app(
             owned = HindsightMemory.connect(
                 settings.hindsight_base_url, settings.hindsight_api_key, settings.bank_id
             )
-        app.state.memory = memory or owned
+        live = memory or owned
+        assert live is not None
+        app.state.memory = live
+        # One store per learning-curve checkpoint; injected fakes serve every checkpoint.
+        app.state.memories = {
+            c.id: (owned.with_bank(checkpoints.bank_for(settings.bank_id, c.id)) if owned else live)
+            for c in checkpoints.CHECKPOINTS
+        }
         yield
         if owned is not None:
             await owned.aclose()

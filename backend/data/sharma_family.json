@@ -9,9 +9,9 @@
       "background": "Retired Indian Railways engineer, widower, lives alone in a 2nd-floor flat in Kothrud with daily morning visits from a home nurse. Speaks Marathi and English, loves his balcony garden."
     },
     "caregivers": [
-      { "id": "priya", "name": "Priya Sharma", "role": "daughter, lives in Pune, primary caregiver" },
-      { "id": "arjun", "name": "Arjun Sharma", "role": "son, lives in Seattle" },
-      { "id": "lakshmi", "name": "Lakshmi Nair", "role": "home nurse, visits every morning" }
+      { "id": "priya", "name": "Priya Sharma", "role": "daughter, lives in Pune, primary caregiver", "last_seen": "2026-09-24" },
+      { "id": "arjun", "name": "Arjun Sharma", "role": "son, lives in Seattle", "last_seen": "2026-09-14" },
+      { "id": "lakshmi", "name": "Lakshmi Nair", "role": "home nurse, visits every morning", "last_seen": "2026-09-26" }
     ],
     "doctors": [
       { "id": "dr_mehta", "name": "Dr. Anil Mehta", "role": "family physician", "specialty": "General Medicine", "clinic": "Mehta Family Clinic, Kothrud" },
@@ -58,7 +58,7 @@
     { "occurred_at": "2026-08-22T06:30:00+05:30", "author_id": "priya", "type": "fall", "severity": "high", "text": "Dad fell in the bathroom around 6:30 am after getting up quickly. Bruised left elbow and left hip. No head injury and he did not lose consciousness. Neighbour Mr. Joshi helped him up. Pulse 54 afterwards.", "entities": ["fall"] },
     { "occurred_at": "2026-08-22T18:00:00+05:30", "author_id": "priya", "type": "note", "severity": "low", "text": "Installed grab bars in the bathroom and a night light in the corridor. Ordered a non-slip bath mat." },
     { "occurred_at": "2026-08-24T08:10:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 114/70, pulse 55. Elbow bruise is healing, hip still sore when walking." },
-    { "occurred_at": "2026-08-26T21:00:00+05:30", "author_id": "arjun", "type": "note", "severity": "medium", "text": "Asked on the family WhatsApp group whether anyone told Dr. Kulkarni about the fall. Nobody has. Priya thought Lakshmi would, Lakshmi thought Priya would." },
+    { "occurred_at": "2026-08-26T21:00:00+05:30", "author_id": "arjun", "type": "note", "severity": "medium", "text": "Asked on the family WhatsApp group whether anyone told Dr. Kulkarni about Dad's fall on 22 August. Nobody has. Priya thought Lakshmi would, Lakshmi thought Priya would." },
     { "occurred_at": "2026-08-28T08:15:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 116/72, pulse 56, fasting sugar 124." },
     { "occurred_at": "2026-08-30T12:00:00+05:30", "author_id": "priya", "type": "note", "severity": "medium", "text": "The lipid profile and HbA1c test still has not been done. We missed the lab slot because of the fall and then forgot.", "entities": ["lipid profile", "HbA1c"] },
     { "occurred_at": "2026-08-31T20:00:00+05:30", "author_id": "priya", "type": "activity", "severity": "low", "text": "Only a 10 minute walk today, hip and knees sore." },

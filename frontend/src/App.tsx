@@ -10,6 +10,8 @@ import {
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import { api } from './api/client'
+import { CatchUp } from './components/CatchUp'
+import { PatientCard } from './components/PatientCard'
 import { ErrorBox, Thinking } from './components/ui'
 import { AskPanel } from './features/AskPanel'
 import { BriefPanel } from './features/BriefPanel'
@@ -75,8 +77,6 @@ export default function App() {
       </div>
     )
 
-  const { patient } = circle
-
   return (
     <div className="min-h-screen">
       {/* Soft drifting colour behind everything */}
@@ -86,21 +86,25 @@ export default function App() {
         <div className="absolute -bottom-40 left-1/3 h-[26rem] w-[26rem] animate-drift rounded-full bg-sky-200/30 blur-3xl [animation-delay:-16s]" />
       </div>
       <header className="no-print sticky top-0 z-10 border-b border-stone-200/80 bg-white/80 backdrop-blur-md">
-        <div className={`${CONTAINER} flex flex-wrap items-center gap-x-6 gap-y-2 pt-3 xl:py-0`}>
-          <div className="flex animate-fade-in items-center gap-3 xl:py-3">
+        <div
+          className={`${CONTAINER} flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 min-[1750px]:py-0`}
+        >
+          <div className="flex shrink-0 animate-fade-in items-center gap-3 min-[1750px]:py-3">
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-md shadow-brand-600/30">
               <HeartHandshake className="h-7 w-7" />
             </span>
             <div>
               <p className="text-xl leading-tight font-bold text-stone-900">CareCircle</p>
-              <p className="text-sm text-stone-500">Shared memory for the people who care</p>
+              <p className="hidden text-sm text-stone-500 min-[2200px]:block">
+                Shared memory for the people who care
+              </p>
             </div>
           </div>
 
           {/* One row on wide screens; tabs drop to their own row on narrower ones. */}
           <nav
             ref={navRef}
-            className="relative order-last -mx-2 flex w-full gap-1 self-stretch overflow-x-auto xl:order-none xl:mx-0 xl:w-auto xl:flex-1 xl:justify-center"
+            className="relative order-last -mx-2 flex w-full gap-1 self-stretch overflow-x-auto min-[1750px]:order-none min-[1750px]:mx-0 min-[1750px]:w-auto min-[1750px]:flex-1 min-[1750px]:min-w-max min-[1750px]:justify-center"
           >
             {TABS.map(({ id, label, icon: Icon }) => {
               const active = tab === id
@@ -109,7 +113,7 @@ export default function App() {
                   key={id}
                   data-tab={id}
                   onClick={() => setTab(id)}
-                  className={`group relative flex items-center gap-2 px-4 py-3.5 text-base font-medium whitespace-nowrap transition-colors ${
+                  className={`group relative flex items-center gap-2 px-3 py-3.5 text-base font-medium whitespace-nowrap transition-colors ${
                     active ? 'text-brand-700' : 'text-stone-500 hover:text-stone-900'
                   }`}
                 >
@@ -127,22 +131,14 @@ export default function App() {
             />
           </nav>
 
-          <div className="ml-auto flex items-center gap-4 xl:ml-0">
-            <div className="flex animate-fade-in items-center gap-3 rounded-2xl border border-stone-200 bg-white px-3 py-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-amber-400 text-lg font-bold text-amber-900">
-                {patient.name[0]}
-              </div>
-              <div>
-                <p className="text-base leading-tight font-semibold text-stone-900">
-                  {patient.name}, {patient.age}
-                </p>
-                <p className="text-sm text-stone-500">{patient.conditions.join(' · ')}</p>
-              </div>
-            </div>
+          <div className="ml-auto flex shrink-0 items-center gap-3 min-[1750px]:ml-0">
+            <CatchUp circle={circle} authorId={authorId} />
+            <PatientCard circle={circle} onOpenProfile={() => setTab('profile')} />
 
             <label className="flex items-center gap-2 text-base whitespace-nowrap text-stone-500">
-              I am
+              <span className="hidden min-[2000px]:inline">I am</span>
               <select
+                aria-label="I am"
                 value={authorId}
                 onChange={(e) => setAuthorId(e.target.value)}
                 className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-base text-stone-800 focus:border-brand-500 focus:outline-none"

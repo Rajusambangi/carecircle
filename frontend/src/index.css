@@ -25,6 +25,16 @@
   --animate-blink: blink 1s steps(2, start) infinite;
   --animate-float: float 4s ease-in-out infinite;
   --animate-gradient: gradient 6s ease infinite;
+  --animate-grow: grow 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+
+  @keyframes grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
 
   @keyframes slide-in {
     from {

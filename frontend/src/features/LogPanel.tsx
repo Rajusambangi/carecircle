@@ -1,7 +1,16 @@
-import { CircleCheck, Lightbulb, type LucideIcon, Save, TriangleAlert, Zap } from 'lucide-react'
+import {
+  Brain,
+  CircleCheck,
+  Lightbulb,
+  type LucideIcon,
+  Save,
+  TriangleAlert,
+  Zap,
+} from 'lucide-react'
 import { useState } from 'react'
 
 import { api } from '../api/client'
+import { MicButton } from '../components/MicButton'
 import { Badge, Button, Card, EmergencyBanner, ErrorBox, Thinking } from '../components/ui'
 import { errorMessage, formatDate } from '../lib/format'
 import { useToast } from '../lib/toast'
@@ -75,7 +84,7 @@ export function LogPanel({ circle, authorId }: Props) {
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) void submit()
           }}
-          placeholder="e.g. Dad felt dizzy after his bath, BP 112/70…"
+          placeholder="e.g. Dad felt dizzy after his bath, BP 112/70… or tap the mic and speak in English, हिंदी or मराठी"
           className="w-full resize-none rounded-2xl border border-stone-200 bg-white p-4 text-lg transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100 focus:outline-none"
         />
         <div className="stagger mt-4 flex flex-wrap items-center gap-2">
@@ -90,7 +99,10 @@ export function LogPanel({ circle, authorId }: Props) {
           ))}
         </div>
         <div className="mt-5 flex items-center justify-between gap-4">
-          <span className="text-sm text-stone-400">⌘ + Enter to save</span>
+          <div className="flex items-center gap-3">
+            <MicButton onTranscript={(t) => setText((d) => (d ? `${d} ${t}` : t))} />
+            <span className="hidden text-sm text-stone-400 2xl:inline">⌘ + Enter to save</span>
+          </div>
           <Button onClick={() => void submit()} loading={loading} className="px-6">
             {!loading && <Save className="h-5 w-5" />}
             Save to memory
@@ -171,7 +183,44 @@ function LogResult({ entry, circle }: { entry: LogResponse; circle: Circle }) {
         {alerts.length === 0 && !alerts_error && !safety && (
           <p className="mt-2 text-sm text-stone-400">No links to past events found.</p>
         )}
+        {entry.learned.length > 0 && <Learned facts={entry.learned} />}
       </Card>
+    </div>
+  )
+}
+
+/** What Hindsight extracted from this entry — makes the memory visible. */
+function Learned({ facts }: { facts: LogResponse['learned'] }) {
+  const entities = [...new Set(facts.flatMap((f) => f.entities))].slice(0, 10)
+  return (
+    <div className="mt-4 rounded-2xl border border-brand-100 bg-gradient-to-br from-brand-50 to-white p-4">
+      <p className="mb-3 flex items-center gap-2 text-sm font-semibold tracking-wider text-brand-700 uppercase">
+        <Brain className="h-5 w-5 animate-breathe" /> What CareCircle just learned
+      </p>
+      <ul className="space-y-2">
+        {facts.map((f, i) => (
+          <li
+            key={i}
+            style={{ animationDelay: `${300 + i * 140}ms` }}
+            className="flex animate-slide-left items-start gap-2 text-base text-stone-700"
+          >
+            <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-500" />
+            {f.text}
+          </li>
+        ))}
+      </ul>
+      {entities.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {entities.map((e) => (
+            <span
+              key={e}
+              className="animate-pop rounded-full border border-brand-200 bg-white px-2.5 py-0.5 text-sm text-brand-700 [animation-delay:700ms]"
+            >
+              {e}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

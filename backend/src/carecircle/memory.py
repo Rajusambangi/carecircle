@@ -12,7 +12,7 @@ from typing import Any, Protocol
 from hindsight_client import Hindsight
 from hindsight_client_api.exceptions import ApiException
 
-from .schemas import CareEvent, Circle, ProfileResponse, Source, TimelineItem
+from .schemas import CareEvent, Circle, LearnedFact, ProfileResponse, Source, TimelineItem
 
 log = logging.getLogger(__name__)
 
@@ -60,6 +60,14 @@ DIRECTIVES: list[tuple[str, str, int]] = [
         "guessing.",
         80,
     ),
+    (
+        "date-precision",
+        "Every event keeps its own date: the day it happened, as written in the entry that "
+        "first recorded it. A later message that mentions an earlier event (e.g. 'did anyone "
+        "tell the doctor about the fall?') does not change when that event happened. Never "
+        "attribute an event to the date or author of a later message about it.",
+        85,
+    ),
 ]
 
 PROFILE_QUERY = (
@@ -84,7 +92,11 @@ def format_event(event: CareEvent, circle: Circle) -> tuple[str, str]:
     author = circle.person(event.author_id)
     who = f"{author.name} ({author.role})" if author else event.author_id
     when = event.occurred_at.strftime("%a %d %b %Y, %H:%M")
-    content = f"{when} — {who} logged about {circle.patient.name}: {event.text}"
+    content = (
+        f"Entry recorded {when} by {who} about {circle.patient.name}. "
+        f"Events in this entry happened on {event.occurred_at:%d %B %Y} unless another date "
+        f"is stated.\n{event.text}"
+    )
     if event.summary and event.summary != event.text:
         content += f"\nSummary: {event.summary}"
     context = f"care log · {event.type.replace('_', ' ')} · severity {event.severity} · by {who}"
@@ -123,6 +135,12 @@ class MemoryStore(Protocol):
     ) -> list[TimelineItem]: ...
     async def profile(self, patient_id: str) -> ProfileResponse: ...
     async def refresh_profile(self, patient_id: str) -> None: ...
+    async def learned_from(self, event: CareEvent) -> list[LearnedFact]: ...
+    async def memory_count(self) -> int: ...
+
+
+def document_id(event: CareEvent) -> str:
+    return f"log-{event.id}"
 
 
 class HindsightMemory:
@@ -133,6 +151,10 @@ class HindsightMemory:
     @classmethod
     def connect(cls, base_url: str, api_key: str | None, bank_id: str) -> "HindsightMemory":
         return cls(Hindsight(base_url=base_url, api_key=api_key), bank_id)
+
+    def with_bank(self, bank_id: str) -> "HindsightMemory":
+        """Same connection, different bank (used for memory checkpoints)."""
+        return HindsightMemory(self.client, bank_id)
 
     async def aclose(self) -> None:
         await self.client.aclose()
@@ -167,11 +189,16 @@ class HindsightMemory:
 
     async def _ensure_directives(self) -> None:
         existing = await self.client.alist_directives(self.bank_id)
-        names = {d.name for d in existing.items}
+        by_name = {d.name: d for d in existing.items}
         for name, content, priority in DIRECTIVES:
-            if name not in names:
+            current = by_name.get(name)
+            if current is None:
                 await self.client.acreate_directive(
                     self.bank_id, name=name, content=content, priority=priority
+                )
+            elif current.content != content or current.priority != priority:
+                await self.client.aupdate_directive(
+                    self.bank_id, current.id, content=content, priority=priority
                 )
 
     async def _ensure_profile_model(self, circle: Circle) -> None:
@@ -211,6 +238,7 @@ class HindsightMemory:
                         "original_text": e.text[:1000],
                     },
                     "entities": [{"text": name} for name in e.entities] or None,
+                    "document_id": document_id(e),
                 }
             )
         await self.client.aretain_batch(self.bank_id, items)
@@ -239,7 +267,7 @@ class HindsightMemory:
         sources: list[Source] = []
         if resp.based_on and resp.based_on.memories:
             sources = [
-                Source(text=m.text, date=m.occurred_start, type=m.type)
+                Source(text=m.text, date=m.occurred_start, type=m.type, context=m.context)
                 for m in resp.based_on.memories
             ]
         return ReflectResult(text=resp.text, structured=resp.structured_output, sources=sources)
@@ -317,3 +345,22 @@ class HindsightMemory:
 
     async def refresh_profile(self, patient_id: str) -> None:
         await self.client.arefresh_mental_model(self.bank_id, profile_model_id(patient_id))
+
+    async def learned_from(self, event: CareEvent) -> list[LearnedFact]:
+        """Facts Hindsight extracted from one log entry (matched by its document id)."""
+        resp = await self.client.arecall(
+            self.bank_id,
+            event.summary or event.text,
+            max_tokens=2048,
+            tags=[patient_tag(event.patient_id)],
+            tags_match="any",
+        )
+        doc = document_id(event)
+        return [
+            LearnedFact(text=r.text, type=r.type, entities=r.entities or [])
+            for r in resp.results
+            if r.document_id == doc
+        ]
+
+    async def memory_count(self) -> int:
+        return (await self.client.alist_memories(self.bank_id, limit=1)).total

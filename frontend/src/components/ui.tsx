@@ -1,9 +1,9 @@
-import { Brain, Siren, TriangleAlert } from 'lucide-react'
+import { Brain, ShieldAlert, ShieldCheck, Siren, TriangleAlert } from 'lucide-react'
 import { type ButtonHTMLAttributes, type ReactNode, useEffect, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 
 import { formatDate } from '../lib/format'
-import type { SafetyAlert, Source } from '../types'
+import type { DateCheck, SafetyAlert, Source } from '../types'
 
 /** Reveals markdown progressively, like a streamed reply, then renders it in full. */
 export function StreamedMarkdown({ text, duration = 1400 }: { text: string; duration?: number }) {
@@ -238,23 +238,72 @@ export function CountUp({ value, duration = 900 }: { value: number; duration?: n
   return <>{shown}</>
 }
 
+/** "by Lakshmi Nair (home nurse…)" and "symptom" out of a retain context string. */
+function parseContext(context?: string | null): { by?: string; kind?: string } {
+  if (!context) return {}
+  const parts = context.split('·').map((p) => p.trim())
+  const by = parts
+    .find((p) => p.startsWith('by '))
+    ?.slice(3)
+    .split(' (')[0]
+  const kind = parts[0] === 'care log' ? parts[1] : undefined
+  return { by, kind }
+}
+
 export function SourceList({ sources }: { sources: Source[] }) {
   if (sources.length === 0) return null
   return (
     <details className="group mt-5 text-base">
       <summary className="flex cursor-pointer list-none items-center gap-2 font-medium text-stone-500 hover:text-brand-700">
         <Brain className="h-5 w-5" />
-        Based on {sources.length} memories
+        Based on {sources.length} memories — see who recorded what
         <span className="transition-transform group-open:rotate-90">›</span>
       </summary>
       <ul className="stagger mt-3 space-y-2">
-        {sources.map((s, i) => (
-          <li key={i} className="rounded-xl border-l-4 border-brand-200 bg-stone-50 px-4 py-2.5">
-            <span className="mr-2 text-sm font-semibold text-brand-700">{formatDate(s.date)}</span>
-            {s.text}
-          </li>
-        ))}
+        {sources.map((s, i) => {
+          const { by, kind } = parseContext(s.context)
+          return (
+            <li
+              key={i}
+              className="rounded-xl border-l-4 border-brand-200 bg-stone-50 px-4 py-2.5 transition hover:border-brand-500 hover:bg-white"
+            >
+              <div className="mb-0.5 flex flex-wrap items-center gap-2 text-sm">
+                {s.date && (
+                  <span className="font-semibold text-brand-700">{formatDate(s.date)}</span>
+                )}
+                {by && <span className="text-stone-500">recorded by {by}</span>}
+                {kind && (
+                  <span className="rounded-full bg-stone-200/70 px-2 text-xs text-stone-600">
+                    {kind}
+                  </span>
+                )}
+              </div>
+              {s.text}
+            </li>
+          )
+        })}
       </ul>
     </details>
+  )
+}
+
+/** Shows whether every date in an answer is backed by a source memory. */
+export function FactCheck({ checks }: { checks: DateCheck[] }) {
+  if (checks.length === 0) return null
+  const bad = checks.filter((c) => !c.supported)
+  return bad.length === 0 ? (
+    <div className="mt-4 inline-flex animate-pop items-center gap-2 rounded-full bg-brand-50 px-3 py-1.5 text-sm font-medium text-brand-700 [animation-delay:1.4s]">
+      <ShieldCheck className="h-4 w-4" />
+      All {checks.length} date{checks.length > 1 ? 's' : ''} match the family’s records
+    </div>
+  ) : (
+    <div className="mt-4 flex animate-pop items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 [animation-delay:1.4s]">
+      <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+      <span>
+        {bad.length} date{bad.length > 1 ? 's' : ''} not found in the records:{' '}
+        <strong>{bad.map((c) => c.mention).join(', ')}</strong>. Double-check before relying on
+        {bad.length > 1 ? ' them' : ' it'}.
+      </span>
+    </div>
   )
 }
