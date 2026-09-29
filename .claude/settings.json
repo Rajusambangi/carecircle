@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /tmp/hs/x && wc -l hindsight_client/hindsight_client.py && grep -nE \"^\\\\s*\\(async \\)?def |^class \" hindsight_client/hindsight_client.py)",
+      "Read(//private/tmp/hs/x/**)"
+    ]
+  }
+}

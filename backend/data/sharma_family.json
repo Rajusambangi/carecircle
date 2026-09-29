@@ -1,0 +1,90 @@
+{
+  "circle": {
+    "patient": {
+      "id": "ramesh",
+      "name": "Ramesh Sharma",
+      "age": 74,
+      "city": "Pune",
+      "conditions": ["Type 2 diabetes", "Hypertension", "Knee osteoarthritis (both knees)"],
+      "background": "Retired Indian Railways engineer, widower, lives alone in a 2nd-floor flat in Kothrud with daily morning visits from a home nurse. Speaks Marathi and English, loves his balcony garden."
+    },
+    "caregivers": [
+      { "id": "priya", "name": "Priya Sharma", "role": "daughter, lives in Pune, primary caregiver" },
+      { "id": "arjun", "name": "Arjun Sharma", "role": "son, lives in Seattle" },
+      { "id": "lakshmi", "name": "Lakshmi Nair", "role": "home nurse, visits every morning" }
+    ],
+    "doctors": [
+      { "id": "dr_mehta", "name": "Dr. Anil Mehta", "role": "family physician", "specialty": "General Medicine", "clinic": "Mehta Family Clinic, Kothrud" },
+      { "id": "dr_kulkarni", "name": "Dr. Sunita Kulkarni", "role": "cardiologist", "specialty": "Cardiology", "clinic": "Ruby Hall Clinic, Pune" }
+    ]
+  },
+  "history": [
+    { "occurred_at": "2024-03-14T19:30:00+05:30", "author_id": "priya", "type": "reaction", "severity": "high", "text": "Dad developed an itchy red rash on his chest and arms two days after starting Co-trimoxazole (Bactrim DS) for a urine infection. Dr. Mehta stopped it and switched him to Nitrofurantoin. The rash cleared in 5 days. Dr. Mehta said to avoid sulfa antibiotics in future.", "entities": ["Co-trimoxazole", "Bactrim DS", "Nitrofurantoin", "Dr. Anil Mehta"] },
+    { "occurred_at": "2025-11-05T17:00:00+05:30", "author_id": "priya", "type": "appointment", "severity": "low", "text": "Dr. Mehta confirmed mild osteoarthritis in both knees on X-ray. Physiotherapy twice a week and Paracetamol 500 mg when needed. Avoid NSAIDs like ibuprofen because of his BP.", "entities": ["Dr. Anil Mehta", "Paracetamol", "physiotherapy"] },
+
+    { "occurred_at": "2026-07-01T10:00:00+05:30", "author_id": "priya", "type": "note", "severity": "low", "text": "Current medicines, filled in the weekly pill organiser every Sunday: Metformin 500 mg twice daily after meals, Telmisartan 40 mg every morning, Metoprolol succinate 25 mg every morning, Atorvastatin 10 mg at night, Paracetamol 500 mg only when knees hurt.", "entities": ["Metformin", "Telmisartan", "Metoprolol succinate", "Atorvastatin", "Paracetamol"] },
+    { "occurred_at": "2026-07-02T08:15:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "low", "text": "Morning check: BP 138/86, pulse 72, fasting sugar 132 mg/dL. Took morning tablets with breakfast." },
+    { "occurred_at": "2026-07-03T08:30:00+05:30", "author_id": "lakshmi", "type": "preference", "severity": "low", "text": "Uncle refused his tablets when I crushed them into his poha, said he felt tricked. He took them whole with warm water without any fuss. He does not like pills hidden in food." },
+    { "occurred_at": "2026-07-05T21:00:00+05:30", "author_id": "priya", "type": "activity", "severity": "low", "text": "Went for a 20 minute evening walk with Dad around the society garden. Sugar 2 hours after dinner was 158." },
+    { "occurred_at": "2026-07-06T20:00:00+05:30", "author_id": "arjun", "type": "note", "severity": "low", "text": "Sunday video call with Dad. He sounded cheerful, showed me his tomato plants. Mentioned his knees hurt on the stairs to the 2nd floor." },
+    { "occurred_at": "2026-07-08T08:10:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "low", "text": "BP 142/88, pulse 74, fasting sugar 128." },
+    { "occurred_at": "2026-07-10T22:00:00+05:30", "author_id": "priya", "type": "preference", "severity": "low", "text": "Dad has been anxious all week because we told him about the heart specialist appointment 6 days in advance. He slept badly and kept asking if something was wrong. Next time tell him only the night before." },
+    { "occurred_at": "2026-07-12T08:20:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 146/90, pulse 76, fasting sugar 135." },
+    { "occurred_at": "2026-07-15T18:30:00+05:30", "author_id": "priya", "type": "symptom", "severity": "medium", "text": "Dad said his heart was racing and he got breathless climbing the stairs to the 2nd floor today. Settled after sitting for 5 minutes.", "entities": ["palpitations", "breathlessness"] },
+    { "occurred_at": "2026-07-18T08:05:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 150/92, pulse 84, fasting sugar 140." },
+    { "occurred_at": "2026-07-20T12:30:00+05:30", "author_id": "priya", "type": "appointment", "severity": "medium", "text": "Cardiology visit with Dr. Sunita Kulkarni at Ruby Hall. ECG normal sinus rhythm. Clinic BP 148/90. She kept Metoprolol succinate 25 mg and Telmisartan 40 mg for now and asked us to keep a BP diary. Follow-up in 3 weeks.", "entities": ["Dr. Sunita Kulkarni", "ECG", "Metoprolol succinate", "Telmisartan"] },
+    { "occurred_at": "2026-07-20T12:45:00+05:30", "author_id": "priya", "type": "doctor_instruction", "severity": "medium", "text": "Dr. Kulkarni asked for a fasting lipid profile and HbA1c blood test within 6 weeks, before the end of August, and to bring the reports to the next visit.", "entities": ["Dr. Sunita Kulkarni", "lipid profile", "HbA1c"] },
+    { "occurred_at": "2026-07-20T19:00:00+05:30", "author_id": "priya", "type": "preference", "severity": "low", "text": "Dad was grumpy and tired at the 9 am appointment slot. He does much better with afternoon appointments." },
+    { "occurred_at": "2026-07-22T08:15:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "low", "text": "BP 144/88, pulse 80, fasting sugar 130." },
+    { "occurred_at": "2026-07-25T21:15:00+05:30", "author_id": "priya", "type": "activity", "severity": "low", "text": "30 minute evening walk. Sugar 2 hours after dinner 146." },
+    { "occurred_at": "2026-07-27T09:00:00+05:30", "author_id": "arjun", "type": "note", "severity": "low", "text": "Ordered an Omron digital BP monitor delivered to Dad's flat so Lakshmi and Priya use the same machine and readings are consistent.", "entities": ["Omron BP monitor"] },
+    { "occurred_at": "2026-07-29T08:10:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 148/94, pulse 82, fasting sugar 138. Using the new Omron machine." },
+    { "occurred_at": "2026-07-31T20:00:00+05:30", "author_id": "priya", "type": "symptom", "severity": "low", "text": "Knee pain worse after the rain, took Paracetamol 500 mg twice today. Physio session went fine.", "entities": ["Paracetamol"] },
+
+    { "occurred_at": "2026-08-02T08:10:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 150/92, pulse 86, fasting sugar 134." },
+    { "occurred_at": "2026-08-04T23:00:00+05:30", "author_id": "priya", "type": "meal", "severity": "medium", "text": "Family friend's wedding. Dad had jalebi and two gulab jamuns. Sugar 2 hours after dinner was 212." },
+    { "occurred_at": "2026-08-05T08:05:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "Fasting sugar 168 this morning, much higher than usual. BP 146/90, pulse 84." },
+    { "occurred_at": "2026-08-07T23:30:00+05:30", "author_id": "priya", "type": "symptom", "severity": "medium", "text": "Dad called me at night, heart racing for about 10 minutes while lying in bed. It settled on its own.", "entities": ["palpitations"] },
+    { "occurred_at": "2026-08-10T16:30:00+05:30", "author_id": "priya", "type": "appointment", "severity": "medium", "text": "Follow-up with Dr. Kulkarni. Clinic BP 152/94, pulse 88. She is concerned about the palpitations and BP.", "entities": ["Dr. Sunita Kulkarni"] },
+    { "occurred_at": "2026-08-10T16:45:00+05:30", "author_id": "priya", "type": "medication_change", "severity": "high", "text": "Dr. Kulkarni increased Metoprolol succinate from 25 mg to 50 mg once daily, starting tomorrow morning. Continue Telmisartan 40 mg. She reminded us again about the lipid profile and HbA1c test.", "entities": ["Dr. Sunita Kulkarni", "Metoprolol succinate", "Telmisartan", "lipid profile", "HbA1c"] },
+    { "occurred_at": "2026-08-11T08:00:00+05:30", "author_id": "lakshmi", "type": "medication_taken", "severity": "low", "text": "Gave the first dose of Metoprolol 50 mg at 8 am with breakfast. Updated the pill organiser.", "entities": ["Metoprolol succinate"] },
+    { "occurred_at": "2026-08-13T08:20:00+05:30", "author_id": "lakshmi", "type": "symptom", "severity": "medium", "text": "Uncle felt dizzy for a few seconds when getting up from bed. He sat down and it passed. BP 118/72, pulse 58.", "entities": ["dizziness"] },
+    { "occurred_at": "2026-08-14T20:30:00+05:30", "author_id": "arjun", "type": "symptom", "severity": "medium", "text": "On our call Dad said he felt light-headed after his bath and 'the room spun a little'. He also says he is more tired than usual.", "entities": ["dizziness", "fatigue"] },
+    { "occurred_at": "2026-08-15T19:00:00+05:30", "author_id": "priya", "type": "activity", "severity": "low", "text": "Independence Day. Dad skipped his evening walk, said he had no energy." },
+    { "occurred_at": "2026-08-16T08:10:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 112/70, pulse 54. Dizzy again when standing up, held the cupboard." },
+    { "occurred_at": "2026-08-18T17:00:00+05:30", "author_id": "priya", "type": "symptom", "severity": "medium", "text": "Dad napped for 3 hours in the afternoon. Says his legs feel heavy and he feels tired all the time.", "entities": ["fatigue"] },
+    { "occurred_at": "2026-08-19T08:15:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 110/68, pulse 52, fasting sugar 126." },
+    { "occurred_at": "2026-08-20T13:00:00+05:30", "author_id": "priya", "type": "note", "severity": "medium", "text": "Called Dr. Kulkarni's clinic about the dizziness. The receptionist said to continue the medicines and discuss at the next visit. The doctor did not call back." },
+    { "occurred_at": "2026-08-22T06:30:00+05:30", "author_id": "priya", "type": "fall", "severity": "high", "text": "Dad fell in the bathroom around 6:30 am after getting up quickly. Bruised left elbow and left hip. No head injury and he did not lose consciousness. Neighbour Mr. Joshi helped him up. Pulse 54 afterwards.", "entities": ["fall"] },
+    { "occurred_at": "2026-08-22T18:00:00+05:30", "author_id": "priya", "type": "note", "severity": "low", "text": "Installed grab bars in the bathroom and a night light in the corridor. Ordered a non-slip bath mat." },
+    { "occurred_at": "2026-08-24T08:10:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 114/70, pulse 55. Elbow bruise is healing, hip still sore when walking." },
+    { "occurred_at": "2026-08-26T21:00:00+05:30", "author_id": "arjun", "type": "note", "severity": "medium", "text": "Asked on the family WhatsApp group whether anyone told Dr. Kulkarni about the fall. Nobody has. Priya thought Lakshmi would, Lakshmi thought Priya would." },
+    { "occurred_at": "2026-08-28T08:15:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 116/72, pulse 56, fasting sugar 124." },
+    { "occurred_at": "2026-08-30T12:00:00+05:30", "author_id": "priya", "type": "note", "severity": "medium", "text": "The lipid profile and HbA1c test still has not been done. We missed the lab slot because of the fall and then forgot.", "entities": ["lipid profile", "HbA1c"] },
+    { "occurred_at": "2026-08-31T20:00:00+05:30", "author_id": "priya", "type": "activity", "severity": "low", "text": "Only a 10 minute walk today, hip and knees sore." },
+
+    { "occurred_at": "2026-09-02T08:20:00+05:30", "author_id": "lakshmi", "type": "symptom", "severity": "medium", "text": "Dizzy on standing up again, held the wall for support. Pulse 53.", "entities": ["dizziness"] },
+    { "occurred_at": "2026-09-04T19:00:00+05:30", "author_id": "priya", "type": "preference", "severity": "low", "text": "Dad asked that we explain his medicines to him in Marathi. He understands better and says he feels respected, not like a child." },
+    { "occurred_at": "2026-09-06T08:10:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 118/74, pulse 56, fasting sugar 129." },
+    { "occurred_at": "2026-09-08T19:30:00+05:30", "author_id": "arjun", "type": "note", "severity": "low", "text": "Set up a fixed Sunday 7 pm IST video call with Dad. He enjoys showing his garden and it lifts his mood." },
+    { "occurred_at": "2026-09-10T11:00:00+05:30", "author_id": "priya", "type": "mood", "severity": "low", "text": "Dad could not remember whether he had taken his morning tablets. The pill organiser showed he had. He was upset about forgetting." },
+    { "occurred_at": "2026-09-12T08:05:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "low", "text": "BP 116/72, pulse 55, fasting sugar 122." },
+    { "occurred_at": "2026-09-14T22:30:00+05:30", "author_id": "priya", "type": "meal", "severity": "medium", "text": "Ganesh Chaturthi at home. Dad ate four ukadiche modaks. Sugar 2 hours after dinner was 204." },
+    { "occurred_at": "2026-09-15T08:10:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "Fasting sugar 161, high again after the festival sweets. BP 114/70, pulse 54." },
+    { "occurred_at": "2026-09-16T21:00:00+05:30", "author_id": "priya", "type": "activity", "severity": "low", "text": "Restarted a 25 minute evening walk together, slowly. Sugar 2 hours after dinner 150." },
+    { "occurred_at": "2026-09-18T08:15:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 116/70, pulse 55. One brief dizzy spell getting out of the chair." },
+    { "occurred_at": "2026-09-20T21:10:00+05:30", "author_id": "priya", "type": "activity", "severity": "low", "text": "30 minute walk. Sugar 2 hours after dinner 141, best reading this month." },
+    { "occurred_at": "2026-09-21T20:00:00+05:30", "author_id": "priya", "type": "symptom", "severity": "medium", "text": "Dad says he has burning when passing urine and is going to the toilet often.", "entities": ["burning urination"] },
+    { "occurred_at": "2026-09-22T08:20:00+05:30", "author_id": "lakshmi", "type": "symptom", "severity": "medium", "text": "Uncle got up 4 times at night to pass urine, still burning. Temperature 99.4 F.", "entities": ["burning urination", "fever"] },
+    { "occurred_at": "2026-09-23T15:00:00+05:30", "author_id": "priya", "type": "appointment", "severity": "low", "text": "Booked the cardiology follow-up with Dr. Kulkarni for Wednesday 30 September at 4 pm at Ruby Hall.", "entities": ["Dr. Sunita Kulkarni"] },
+    { "occurred_at": "2026-09-24T08:10:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 114/68, pulse 54. Dizzy on standing again." },
+    { "occurred_at": "2026-09-26T18:00:00+05:30", "author_id": "priya", "type": "appointment", "severity": "medium", "text": "Saw Dr. Mehta for the urine symptoms. He sent a urine culture test, results in 2 days, and said to drink more water meanwhile.", "entities": ["Dr. Anil Mehta", "urine culture"] },
+    { "occurred_at": "2026-09-27T08:15:00+05:30", "author_id": "lakshmi", "type": "vitals", "severity": "medium", "text": "BP 112/70, pulse 53, fasting sugar 128. Burning a little better with more water." }
+  ],
+  "demo_script": [
+    { "step": "ask_without_memory", "question": "Dad has been dizzy again this morning. What should I tell the cardiologist?" },
+    { "step": "ask_with_memory", "question": "Dad has been dizzy again this morning. What should I tell the cardiologist?" },
+    { "step": "live_log", "author_id": "priya", "text": "Dr. Mehta called with the urine culture result and wants to start Bactrim DS twice a day for 5 days." },
+    { "step": "brief", "doctor_id": "dr_kulkarni", "since": "2026-08-10", "visit_date": "2026-09-30" }
+  ]
+}
