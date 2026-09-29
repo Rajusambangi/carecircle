@@ -2,7 +2,7 @@ import { CalendarDays, Search } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 
 import { api } from '../api/client'
-import { Badge, Card, ErrorBox, Skeleton, Spinner } from '../components/ui'
+import { Badge, Card, ErrorBox, Reveal, Skeleton, Spinner } from '../components/ui'
 import { errorMessage, formatDate } from '../lib/format'
 import type { Circle, TimelineItem } from '../types'
 
@@ -66,29 +66,31 @@ export function TimelinePanel({ circle }: { circle: Circle }) {
       )}
 
       {byMonth.map(([month, list]) => (
-        <section key={month} className="animate-fade-up">
+        <section key={month}>
           <h3 className="mb-3 flex items-center gap-2 text-base font-bold tracking-wide text-stone-500 uppercase">
             <CalendarDays className="h-5 w-5 text-brand-600" />
             {month}
           </h3>
-          <ol className="stagger relative space-y-3 border-l-2 border-brand-200 pl-6">
+          <ol className="relative space-y-3 border-l-2 border-brand-200 pl-6">
             {list.map((m) => (
               <li key={m.id} className="relative">
-                <span className="absolute top-4 -left-[33px] h-4 w-4 rounded-full border-4 border-white bg-brand-500 shadow" />
-                <div className="rounded-2xl border border-stone-200 bg-white px-5 py-3.5 text-base transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md">
-                  <div className="mb-1.5 flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-semibold text-stone-500">
-                      {formatDate(m.date)}
-                    </span>
-                    {m.tags
-                      .filter((t) => t.startsWith('type:'))
-                      .map((t) => (
-                        <Badge key={t}>{t.slice(5).replace('_', ' ')}</Badge>
-                      ))}
-                    {m.fact_type && <Badge tone="brand">{m.fact_type}</Badge>}
+                <Reveal>
+                  <span className="absolute top-4 -left-[33px] h-4 w-4 rounded-full border-4 border-white bg-brand-500 shadow" />
+                  <div className="rounded-2xl border border-stone-200 bg-white px-5 py-3.5 text-base transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md">
+                    <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-semibold text-stone-500">
+                        {formatDate(m.date)}
+                      </span>
+                      {m.tags
+                        .filter((t) => t.startsWith('type:'))
+                        .map((t) => (
+                          <Badge key={t}>{t.slice(5).replace('_', ' ')}</Badge>
+                        ))}
+                      {m.fact_type && <Badge tone="brand">{m.fact_type}</Badge>}
+                    </div>
+                    {m.text}
                   </div>
-                  {m.text}
-                </div>
+                </Reveal>
               </li>
             ))}
           </ol>

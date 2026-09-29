@@ -1,9 +1,90 @@
 import { Brain, Siren, TriangleAlert } from 'lucide-react'
-import { type ButtonHTMLAttributes, type ReactNode, useEffect, useState } from 'react'
+import { type ButtonHTMLAttributes, type ReactNode, useEffect, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 
 import { formatDate } from '../lib/format'
 import type { SafetyAlert, Source } from '../types'
+
+/** Reveals markdown progressively, like a streamed reply, then renders it in full. */
+export function StreamedMarkdown({ text, duration = 1400 }: { text: string; duration?: number }) {
+  const [shown, setShown] = useState(0)
+  useEffect(() => {
+    let frame = 0
+    const start = performance.now()
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration)
+      setShown(Math.ceil(text.length * t))
+      if (t < 1) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [text, duration])
+  const done = shown >= text.length
+  return (
+    <div className="prose-care text-base leading-relaxed">
+      <Markdown>{done ? text : text.slice(0, shown)}</Markdown>
+      {!done && <span className="caret" aria-hidden />}
+    </div>
+  )
+}
+
+/** Fades children up the first time they scroll into view. */
+export function Reveal({ children, className = '' }: { children: ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('revealed')
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '0px 0px -40px 0px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+  return (
+    <div ref={ref} className={`reveal ${className}`}>
+      {children}
+    </div>
+  )
+}
+
+export function Switch({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean
+  onChange: (value: boolean) => void
+  label: ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className="group flex items-center gap-2.5 text-sm text-stone-600"
+    >
+      <span
+        className={`relative h-6 w-11 rounded-full transition-colors duration-300 ${
+          checked ? 'bg-brand-600' : 'bg-stone-300'
+        }`}
+      >
+        <span
+          className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+            checked ? 'translate-x-5' : ''
+          }`}
+        />
+      </span>
+      {label}
+    </button>
+  )
+}
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (

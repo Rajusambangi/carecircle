@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api/client'
 import { Button, Card, CountUp, ErrorBox, MarkdownText, Skeleton, Thinking } from '../components/ui'
 import { errorMessage, formatDate } from '../lib/format'
+import { useToast } from '../lib/toast'
 import type { Circle, ProfileResponse } from '../types'
 
 export function ProfilePanel({ circle }: { circle: Circle }) {
@@ -12,6 +13,7 @@ export function ProfilePanel({ circle }: { circle: Circle }) {
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const patientId = circle.patient.id
+  const toast = useToast()
 
   // State is only set once the request settles, so this is safe to call from an effect.
   const load = useCallback(
@@ -35,6 +37,7 @@ export function ProfilePanel({ circle }: { circle: Circle }) {
       // Refresh runs in the background on Hindsight; give it a moment before re-reading.
       await new Promise((r) => setTimeout(r, 8000))
       await load()
+      toast.show('Care profile updated from the latest memories')
     } catch (e) {
       setError(errorMessage(e))
     } finally {

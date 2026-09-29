@@ -22,6 +22,7 @@ import {
   Thinking,
 } from '../components/ui'
 import { errorMessage, formatDate } from '../lib/format'
+import { useToast } from '../lib/toast'
 import type { BriefResponse, Circle } from '../types'
 
 export function BriefPanel({ circle }: { circle: Circle }) {
@@ -31,20 +32,21 @@ export function BriefPanel({ circle }: { circle: Circle }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<BriefResponse | null>(null)
+  const toast = useToast()
 
   async function generate() {
     setLoading(true)
     setError(null)
     setResult(null)
     try {
-      setResult(
-        await api.brief({
-          patient_id: circle.patient.id,
-          doctor_id: doctorId,
-          since: since || undefined,
-          visit_date: visitDate || undefined,
-        }),
-      )
+      const res = await api.brief({
+        patient_id: circle.patient.id,
+        doctor_id: doctorId,
+        since: since || undefined,
+        visit_date: visitDate || undefined,
+      })
+      setResult(res)
+      toast.show(`Brief for ${res.doctor} is ready`)
     } catch (e) {
       setError(errorMessage(e))
     } finally {

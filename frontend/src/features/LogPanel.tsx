@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { api } from '../api/client'
 import { Badge, Button, Card, EmergencyBanner, ErrorBox, Thinking } from '../components/ui'
 import { errorMessage, formatDate } from '../lib/format'
+import { useToast } from '../lib/toast'
 import type { Alert, Circle, LogResponse } from '../types'
 
 const EXAMPLES = [
@@ -14,7 +15,7 @@ const EXAMPLES = [
 
 const ALERT_STYLES: Record<Alert['severity'], { box: string; icon: LucideIcon; color: string }> = {
   urgent: {
-    box: 'border-red-300 bg-red-50 animate-shake',
+    box: 'border-red-300 bg-red-50',
     icon: TriangleAlert,
     color: 'text-red-600',
   },
@@ -32,6 +33,7 @@ export function LogPanel({ circle, authorId }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [entries, setEntries] = useState<LogResponse[]>([])
+  const toast = useToast()
 
   const author = circle.caregivers.find((c) => c.id === authorId)
   const first = circle.patient.name.split(' ')[0]
@@ -44,6 +46,13 @@ export function LogPanel({ circle, authorId }: Props) {
       const res = await api.log({ text, author_id: authorId, patient_id: circle.patient.id })
       setEntries((prev) => [res, ...prev])
       setText('')
+      const links = res.alerts.length
+      toast.show(
+        links
+          ? `Saved to memory · ${links} link${links > 1 ? 's' : ''} to past events`
+          : 'Saved to memory',
+        res.safety || res.alerts.some((a) => a.severity === 'urgent') ? 'warning' : 'success',
+      )
     } catch (e) {
       setError(errorMessage(e))
     } finally {
@@ -113,13 +122,17 @@ function LogResult({ entry, circle }: { entry: LogResponse; circle: Circle }) {
   const { event, safety, alerts, alerts_error } = entry
   const author = circle.caregivers.find((c) => c.id === event.author_id)
   return (
-    <div className="stagger space-y-4">
+    <div className="space-y-4">
       {safety && <EmergencyBanner alert={safety} />}
       {alerts.map((a, i) => {
         const style = ALERT_STYLES[a.severity]
         const Icon = style.icon
         return (
-          <div key={i} className={`flex gap-4 rounded-2xl border-2 px-5 py-4 ${style.box}`}>
+          <div
+            key={i}
+            style={{ animationDelay: `${150 + i * 120}ms` }}
+            className={`flex animate-slide-in gap-4 rounded-2xl border-2 px-5 py-4 ${style.box}`}
+          >
             <Icon className={`mt-0.5 h-7 w-7 shrink-0 ${style.color}`} />
             <div>
               <p className="text-lg font-semibold text-stone-900">{a.title}</p>
@@ -138,9 +151,11 @@ function LogResult({ entry, circle }: { entry: LogResponse; circle: Circle }) {
       {alerts_error && <ErrorBox message={alerts_error} />}
       <Card className="py-4">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge tone="brand">
-            <CircleCheck className="h-4 w-4" /> remembered
-          </Badge>
+          <span className="animate-ripple rounded-full">
+            <Badge tone="brand">
+              <CircleCheck className="h-4 w-4" /> remembered
+            </Badge>
+          </span>
           <Badge
             tone={
               event.severity === 'high' ? 'red' : event.severity === 'medium' ? 'amber' : 'stone'
