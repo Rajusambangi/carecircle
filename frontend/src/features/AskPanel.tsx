@@ -12,6 +12,7 @@ import {
   RotateCcw,
   Sparkles,
   SplitSquareHorizontal,
+  TriangleAlert,
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -391,9 +392,9 @@ function CurveBar({ answers }: { answers: Answer[] }) {
               <span className="text-xs text-stone-400">
                 {a.checkpoint === undefined
                   ? '0 memories'
-                  : a.memoryCount != null
-                    ? `${a.memoryCount} memories`
-                    : 'not seeded'}
+                  : isEmptyCheckpoint(a)
+                    ? 'not loaded'
+                    : `${a.memoryCount} memories`}
               </span>
             </div>
           ))}
@@ -401,6 +402,11 @@ function CurveBar({ answers }: { answers: Answer[] }) {
       </div>
     </div>
   )
+}
+
+/** A past checkpoint whose bank was never seeded (the live bank is never "empty" here). */
+function isEmptyCheckpoint(a: Answer): boolean {
+  return a.checkpoint !== undefined && a.checkpoint !== 'today' && !a.memoryCount
 }
 
 const LEVEL_STYLES = [
@@ -445,6 +451,15 @@ function AnswerCard({ answer, delay }: { answer: Answer; delay: number }) {
           </p>
         </div>
       </div>
+      {isEmptyCheckpoint(answer) && (
+        <div className="mb-4 flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>
+            This checkpoint’s memory bank is empty. Run <code>make seed-checkpoints</code> to load
+            the history up to this date.
+          </span>
+        </div>
+      )}
       {answer.loading && (
         <>
           <Thinking label={muted ? 'Thinking' : 'Searching memory'} />

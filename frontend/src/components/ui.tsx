@@ -1,9 +1,33 @@
 import { Brain, ShieldAlert, ShieldCheck, Siren, TriangleAlert } from 'lucide-react'
 import { type ButtonHTMLAttributes, type ReactNode, useEffect, useRef, useState } from 'react'
-import Markdown from 'react-markdown'
+import Markdown, { type Components } from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 import { formatDate } from '../lib/format'
 import type { DateCheck, SafetyAlert, Source } from '../types'
+
+const MD_COMPONENTS: Components = {
+  // Wide tables scroll inside their card instead of stretching it.
+  table: ({ children }) => (
+    <div className="my-3 overflow-x-auto rounded-2xl border border-stone-200">
+      <table>{children}</table>
+    </div>
+  ),
+  a: ({ children, href }) => (
+    <a href={href} target="_blank" rel="noreferrer">
+      {children}
+    </a>
+  ),
+}
+
+/** Markdown with GitHub-flavoured extras (tables, strikethrough, task lists). */
+function Md({ children }: { children: string }) {
+  return (
+    <Markdown remarkPlugins={[remarkGfm]} components={MD_COMPONENTS}>
+      {children}
+    </Markdown>
+  )
+}
 
 /** Reveals markdown progressively, like a streamed reply, then renders it in full. */
 export function StreamedMarkdown({ text, duration = 1400 }: { text: string; duration?: number }) {
@@ -22,7 +46,7 @@ export function StreamedMarkdown({ text, duration = 1400 }: { text: string; dura
   const done = shown >= text.length
   return (
     <div className="prose-care text-base leading-relaxed">
-      <Markdown>{done ? text : text.slice(0, shown)}</Markdown>
+      <Md>{done ? text : text.slice(0, shown)}</Md>
       {!done && <span className="caret" aria-hidden />}
     </div>
   )
@@ -216,7 +240,7 @@ export function Badge({
 export function MarkdownText({ children }: { children: string }) {
   return (
     <div className="prose-care animate-fade-in text-base leading-relaxed">
-      <Markdown>{children}</Markdown>
+      <Md>{children}</Md>
     </div>
   )
 }

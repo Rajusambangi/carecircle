@@ -6,7 +6,7 @@ Target: **4 minutes** for the finale (a 3-minute cut is marked ✂️). Every cl
 
 ## Before you go on stage (T-30 min)
 
-- [ ] `make seed` has finished (live bank **and** the Week 1 / Day 45 checkpoints).
+- [ ] `make seed` has finished (live bank **and** the Week 1 / Day 45 checkpoints). If the learning curve shows "not loaded", run `make seed-checkpoints` (keeps the live bank).
 - [ ] `make backend` and `make frontend` running; Ollama running (`ollama serve`) as LLM fallback.
 - [ ] Open `http://localhost:5175` in **Chrome** (most reliable for voice), full screen, zoom 100%.
 - [ ] Allow microphone permission once (click the mic, say anything, stop).

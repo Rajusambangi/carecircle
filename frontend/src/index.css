@@ -227,6 +227,40 @@ body {
 .prose-care strong {
   @apply font-semibold text-stone-900;
 }
+.prose-care h3 {
+  @apply mt-4 mb-1.5 text-base font-semibold text-stone-800;
+}
+.prose-care ol {
+  @apply list-decimal space-y-1.5 pl-5;
+}
+.prose-care li > ul,
+.prose-care li > ol {
+  @apply mt-1.5;
+}
+.prose-care a {
+  @apply font-medium text-brand-700 underline decoration-brand-200 underline-offset-2 hover:decoration-brand-500;
+}
+.prose-care code {
+  @apply rounded bg-stone-100 px-1 py-0.5 text-[0.9em];
+}
+.prose-care table {
+  @apply w-full border-collapse text-left text-[0.95em];
+}
+.prose-care thead {
+  @apply bg-brand-50;
+}
+.prose-care th {
+  @apply px-4 py-2.5 text-xs font-semibold tracking-wider whitespace-nowrap text-brand-700 uppercase;
+}
+.prose-care td {
+  @apply border-t border-stone-100 px-4 py-2.5 align-top text-stone-700;
+}
+.prose-care tbody tr {
+  @apply transition-colors hover:bg-stone-50;
+}
+.prose-care td:first-child {
+  @apply font-semibold whitespace-nowrap text-stone-900;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,

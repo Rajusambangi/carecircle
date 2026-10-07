@@ -76,6 +76,8 @@ def _source_dates(sources: list[Source]) -> set[Key]:
 
 def check_dates(answer: str, sources: list[Source]) -> list[DateCheck]:
     known = _source_dates(sources)
+    if not known:
+        return []  # nothing to check against: no verdict rather than a false alarm
     return [
         DateCheck(mention=written, supported=key in known)
         for key, written in _mentions(answer).items()

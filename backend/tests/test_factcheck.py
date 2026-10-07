@@ -25,3 +25,14 @@ def test_flags_a_date_no_memory_backs() -> None:
 
 def test_answer_without_dates() -> None:
     assert check_dates("Encourage him to walk after dinner.", SOURCES) == []
+
+
+def test_no_evidence_means_no_verdict() -> None:
+    assert check_dates("The fall happened on August 22.", []) == []
+
+
+def test_dates_in_mental_model_text_count_as_support() -> None:
+    profile = Source(text="Dizziness since Aug 13, 2026 (Lakshmi Nair); fall on 22 Aug 2026.")
+    assert {c.mention: c.supported for c in check_dates("Dizzy since Aug 13.", [profile])} == {
+        "Aug 13": True
+    }

@@ -1,4 +1,4 @@
-.PHONY: install backend frontend seed test lint format check
+.PHONY: install backend frontend seed seed-checkpoints test lint format check
 
 install:
 	cd backend && python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
@@ -12,6 +12,10 @@ frontend:
 
 seed:
 	cd backend && .venv/bin/python scripts/seed.py --reset --checkpoints --refresh-profile
+
+# Only the Week 1 / Day 45 learning-curve banks; the live bank (and anything logged) is kept.
+seed-checkpoints:
+	cd backend && .venv/bin/python scripts/seed.py --reset --checkpoints-only --refresh-profile
 
 test:
 	cd backend && .venv/bin/pytest -q

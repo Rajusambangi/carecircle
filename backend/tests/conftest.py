@@ -36,10 +36,12 @@ class FakeMemory:
 
     async def reflect(self, patient_id: str, query: str, **kwargs: Any) -> ReflectResult:
         self.reflect_calls.append({"patient_id": patient_id, "query": query, **kwargs})
+        sources = [Source(text="Metoprolol increased 25→50 mg", date="2026-08-10", type="world")]
         return ReflectResult(
             text="From memory: dizziness began Aug 13, 3 days after Metoprolol was increased.",
             structured=self.structured,
-            sources=[Source(text="Metoprolol increased 25→50 mg", date="2026-08-10", type="world")],
+            sources=sources,
+            evidence=sources,
         )
 
     async def recall(self, patient_id: str, query: str, **kwargs: Any) -> list[Source]:

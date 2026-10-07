@@ -2,6 +2,7 @@
 
 python scripts/seed.py --reset                      # full 90-day history (live bank)
 python scripts/seed.py --reset --checkpoints        # also the Week 1 / Day 45 banks
+python scripts/seed.py --reset --checkpoints-only   # only checkpoint banks, keeps the live bank
 python scripts/seed.py --reset --until 2026-07-08   # one bank up to a date
 """
 
@@ -50,6 +51,11 @@ async def main() -> None:
         "--checkpoints", action="store_true", help="also seed the learning-curve checkpoint banks"
     )
     parser.add_argument(
+        "--checkpoints-only",
+        action="store_true",
+        help="seed only the checkpoint banks and leave the live bank untouched",
+    )
+    parser.add_argument(
         "--refresh-profile", action="store_true", help="refresh the care profile at the end"
     )
     args = parser.parse_args()
@@ -59,8 +65,8 @@ async def main() -> None:
     history = load_history(settings.circle_data)
     base = args.bank or settings.bank_id
 
-    plan: list[tuple[str, date | None]] = [(base, args.until)]
-    if args.checkpoints:
+    plan: list[tuple[str, date | None]] = [] if args.checkpoints_only else [(base, args.until)]
+    if args.checkpoints or args.checkpoints_only:
         plan += [
             (checkpoints.bank_for(base, c.id), c.until)
             for c in checkpoints.CHECKPOINTS

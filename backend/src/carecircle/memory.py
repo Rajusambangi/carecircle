@@ -108,6 +108,8 @@ class ReflectResult:
     text: str
     structured: dict[str, Any] | None = None
     sources: list[Source] = field(default_factory=list)
+    # Everything reflect drew on (facts + mental models), for fact-checking; not shown as-is.
+    evidence: list[Source] = field(default_factory=list)
 
 
 class MemoryStore(Protocol):
@@ -265,12 +267,22 @@ class HindsightMemory:
             include_facts=True,
         )
         sources: list[Source] = []
-        if resp.based_on and resp.based_on.memories:
+        models: list[Source] = []
+        if resp.based_on:
             sources = [
                 Source(text=m.text, date=m.occurred_start, type=m.type, context=m.context)
-                for m in resp.based_on.memories
+                for m in resp.based_on.memories or []
             ]
-        return ReflectResult(text=resp.text, structured=resp.structured_output, sources=sources)
+            models = [
+                Source(text=m.text, type="mental_model", context=m.context)
+                for m in resp.based_on.mental_models or []
+            ]
+        return ReflectResult(
+            text=resp.text,
+            structured=resp.structured_output,
+            sources=sources,
+            evidence=sources + models,
+        )
 
     async def recall(
         self,
